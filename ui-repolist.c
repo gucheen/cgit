@@ -61,6 +61,14 @@ static int get_repo_modtime(const struct cgit_repo *repo, time_t *mtime)
 	}
 
 	strbuf_reset(&path);
+	strbuf_addf(&path, "%s/refs/heads/%s", repo->path, "main");
+	if (stat(path.buf, &s) == 0) {
+		*mtime = s.st_mtime;
+		r->mtime = *mtime;
+		goto end;
+	}
+
+	strbuf_reset(&path);
 	strbuf_addf(&path, "%s/%s", repo->path, "packed-refs");
 	if (stat(path.buf, &s) == 0) {
 		*mtime = s.st_mtime;
